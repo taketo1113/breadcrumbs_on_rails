@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     env:
@@ -12,9 +15,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['3.3', '3.2', '3.1', '3.0', '2.7', '2.6']
-        gemfile: ['8.0', '7.2', '7.1', '7.0', '6.1', '6.0']
+        ruby-version: ['4.0', '3.4', '3.3', '3.2', '3.1', '3.0', '2.7', '2.6']
+        gemfile: ['8.1', '8.0', '7.2', '7.1', '7.0', '6.1', '6.0']
         exclude:
+          # rails 8.1: support ruby 3.2+
+          - gemfile: '8.1'
+            ruby-version: '3.1'
+          - gemfile: '8.1'
+            ruby-version: '3.0'
+          - gemfile: '8.1'
+            ruby-version: '2.7'
+          - gemfile: '8.1'
+            ruby-version: '2.6'
           # rails 8.0: support ruby 3.2+
           - gemfile: '8.0'
             ruby-version: '3.1'
@@ -40,7 +52,7 @@ jobs:
     name: rails ${{ matrix.gemfile }}, ruby ${{ matrix.ruby-version }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
